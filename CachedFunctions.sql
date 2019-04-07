@@ -105,7 +105,7 @@ CREATE FUNCTION [dbo].[fn_Validate_IranianNationalCode](@NationalCode NVARCHAR(2
 RETURNS NVARCHAR(10)
 AS
 BEGIN
-	DECLARE @NewNC VARCHAR(10)=''
+	DECLARE @NewNC NVARCHAR(10)=''
 	SET @NationalCode=REPLACE(REPLACE(@NationalCode,'-',''),'.','')
 	SET @NationalCode=LTRIM(RTRIM(@NationalCode))
 	IF @NationalCode IS NULL OR LEN(@NationalCode)>10 OR LEN(@NationalCode)<8
