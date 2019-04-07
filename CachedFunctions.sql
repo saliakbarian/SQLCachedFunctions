@@ -1,7 +1,7 @@
 -- Cached Functions Installation
--- By Saeed Aliakbarian, 
+-- Author: Saeed Aliakbarian
 -- Created: 2019-03-10 (1397-12-19)
--- Last Update: 2019-04-04 (1398-01-15)
+-- Last Update: 2019-04-07 (1398-01-18)
 
 -- Before Execute:
 --	1. Replace all occurences of YourDatabaseName to your database name in the following code 
@@ -83,7 +83,9 @@ BEGIN
 END
 GO
 
-
+-- Author: Saeed Aliakbarian
+-- Created: 2019-03-10 (1397-12-19)
+-- Last Update: 2019-04-04 (1398-01-15)
 -- This function validates an input string to be a valid Iranian National Code
 -- Output:
 --		If Valid => the 10 digit Iranian National Code with English numeric digits
@@ -150,6 +152,80 @@ BEGIN
 END
 GO
 
+-- Author: Saeed Aliakbarian
+-- Created: 2019-03-10 (1397-12-19)
+-- Last Update: 2019-04-07 (1398-01-18)
+-- This function validates an input string to be a valid Iranian Postal Code
+-- Output:
+--		If Valid => the 10 digit Iranian Postal Code with English numeric digits
+--		If Not Valid => NULL
+-- Notes:
+-- If the input string contains '-', '.' or ' ' characters, they are removed before validation
+-- If the input string contains Persian or Arabic numeric digits, they are converted to English numeric digits it the output
+-- A valid Iranian Postal Code must contain at least one '1' digit among its first 5 digits 
+-- A valid Iranian Postal Code must not contain any '0' or '2' digits among its first 5 digits
+-- An input string determined as an invalid one, is definitely invalid and will not be assigned to any place even in the future
+-- An input string determined as a valid one, will have one of the following conditions:
+--   1. Already assigned to a place
+--	 2. Valid and free that can be assigned to a real place in the future
+--   3. Invalid because of other conditions not contained in this function (possibly not currently publicly announced by authorities)
+-- To determin if an Iranian Postal Code is assigned to a real place or not, you have to check it with authorities at post.ir
+CREATE FUNCTION [dbo].[fn_Validate_IranianPostalCode](@PostalCode NVARCHAR(20)) 
+RETURNS NVARCHAR(10)
+AS
+BEGIN
+	DECLARE @IsOneFound BIT=0
+	DECLARE @ResultPC NVARCHAR(10)=''
+
+    DECLARE @C NCHAR(1)
+	DECLARE @UC INT
+	DECLARE @i INT=1
+
+	SET @PostalCode=REPLACE(REPLACE(REPLACE(@PostalCode,'-',''),'.',''),' ','')
+	SET @PostalCode=LTRIM(RTRIM(@PostalCode))
+	IF @PostalCode IS NULL OR LEN(@PostalCode)<>10
+		RETURN NULL
+
+	WHILE @i<=10
+	BEGIN
+		SET @C=SUBSTRING(@PostalCode,@i,1)
+		SET @UC=UNICODE(@C)
+
+		IF @UC BETWEEN 0x06F0 AND 0x6F9 -- Arabic Digits
+		BEGIN
+			SET @UC-=1728 -- English Digits
+			SET @C=NCHAR(@UC) 
+		END
+		ELSE IF @UC BETWEEN 0x0660 AND 0x669 -- Persian Digits
+		BEGIN
+			SET @UC-=1584 -- English Digits
+			SET @C=NCHAR(@UC) 
+		END
+
+		-- No other Character are acceptable
+		IF @UC NOT BETWEEN 0x30 AND 0x39 -- English Digits
+			RETURN NULL
+		
+		IF @i<=5
+		BEGIN
+			IF @UC=0x31	-- 1
+				SET @IsOneFound=1	-- a '1' Digit must exists in first five digits
+			ELSE IF @UC=0x30 OR @UC=0x32	-- 0 and 2 are not acceptable in first 5 digits of postal code
+				RETURN NULL
+		END
+
+		SET @ResultPC=@ResultPC+@C
+		SET @i=@i+1
+	END
+
+	-- a '1' Digit must exist in first five digits
+	IF @IsOneFound=0
+		RETURN NULL
+
+	RETURN @ResultPC
+END
+GO
+
 
 -- This cached table function validates the @InputValue string based on @CacheTypeId
 -- Output: (as OutputValue field)
@@ -170,6 +246,7 @@ RETURN
 					CASE @CacheTypeId
 						WHEN 0 THEN dbo.fn_Validate_Foo(@InputValue)
 						WHEN 1 THEN dbo.fn_Validate_IranianNationalCode(@InputValue)
+						WHEN 2 THEN dbo.fn_Validate_IranianPostalCode(@InputValue)
 					END) OutputValue
 )
 GO
@@ -189,6 +266,23 @@ RETURN
 	SELECT OutputValue FROM cfn_CachedValidate( 1, @InputValue)
 )
 GO
+
+-- This cached table function validates an input string to be a valid Iranian Postal Code
+-- Output:
+--		If Valid => the 10 digit Iranian Postal Code with English numeric digits
+--		If not Valid => NULL
+CREATE FUNCTION [dbo].[cfn_CachedValidate_IranianPostalCode]
+(	
+	@InputValue NVARCHAR(20)
+)
+RETURNS TABLE 
+AS
+RETURN
+(
+	SELECT OutputValue FROM cfn_CachedValidate( 2, @InputValue)
+)
+GO
+
 
 -- Cache Types Data
 INSERT [dbo].[CacheTypes] ([Id], [Name]) VALUES (0, N'Foo')
