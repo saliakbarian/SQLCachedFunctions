@@ -1,14 +1,32 @@
 # SQLCachedFunctions
-Performance Enhanced T-SQL Functions using Cache
 
+Performance Enhanced T-SQL Functions using Cache in SQL Server
 <p dir='rtl' align='right'>
-توابع با سرعت اجرای بالا با کمک cache در SQL Server
+توابع با سرعت اجرای بالا با کمک cache در SQL Server به زبان T-SQL
 </p>
-The installation script, creates a new database with a mempory optimized table as the cache. Then it creates some scalar functions and uses them in the corresponding table valued functions together with the cache table to improve their performance.
 
-## Database Installation
+SQL-Cached-Functions is a repository of some useful T-SQL functions, along with the enhanced version of them using caches. The caches are implemented by memory optimized tables in SQL Server, and that's why you have to use SQL Server 2014 or later.
+
+The functions currently implemented are:
+
+Scalar Functions:
+```
+fn_Validate_IranianNationalCode
+fn_Validate_IranianPostalCode
+```
+Cached Functions:
+```
+cfn_CachedValidate
+cfn_CachedValidate_IranianNationalCode
+cfn_CachedValidate_IranianPostalCode
+```
+
+## Installation
+The installation script, creates a new file-group for your database with a memory optimized table as the cache. Then it creates some scalar functions and uses them in the corresponding table valued functions together with the cache table to improve their performance.
+
+Installation Steps:
 1. Open CachedFunctions.sql in an editor
-2. Replace all occurences of YourDatabaseName to your database name
+2. Replace all occurrences of YourDatabaseName to your database name
 3. Change BUCKET_COUNT to a proper value
 4. Execute the result code using SSMS or sqlcmd 
 ###### The recommended value for BUCKET_COUNT is 2*(the total number of records that you are going to insert into CachedValues table)
@@ -20,4 +38,3 @@ SELECT * FROM dbo.cfn_CachedValidate_IranianNationalCode('0123456789')
 SELECT * FROM dbo.cfn_CachedValidate_IranianNationalCode('1234567890')
 SELECT * FROM dbo.cfn_CachedValidate_IranianNationalCode('12-345678-9')
 ```
-
