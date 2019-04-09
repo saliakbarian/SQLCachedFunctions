@@ -291,10 +291,6 @@ INSERT [dbo].[CacheTypes] ([Id], [Name]) VALUES (1, N'IranianNationalCode')
 GO
 INSERT [dbo].[CacheTypes] ([Id], [Name]) VALUES (2, N'IranianPostalCode')
 GO
-INSERT [dbo].[CacheTypes] ([Id], [Name]) VALUES (3, N'PersianDate')
-GO
-INSERT [dbo].[CacheTypes] ([Id], [Name]) VALUES (4, N'GregorianDate')
-GO
 
 -- Sample Data
 INSERT [dbo].[CachedValues] ([CacheTypeId], [InputValue], [OutputValue]) VALUES (0, N'12345', NULL)
