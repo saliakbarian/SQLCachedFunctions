@@ -4,7 +4,9 @@
 -- Last Update: 2019-04-07 (1398-01-18)
 
 -- IMPORTANT
--- Before executing the following code, you must have installed https://github.com/mirsaeedi/SQLCLR-Jalali-Date-Utility
+-- Before executing the following code:
+--	install CachedFunctions.sql
+--	install https://github.com/mirsaeedi/SQLCLR-Jalali-Date-Utility
 
 -- Creating CachedDates Table and Indexes
 CREATE TABLE [dbo].[CachedDates]
