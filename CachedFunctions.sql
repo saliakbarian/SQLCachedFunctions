@@ -1,7 +1,7 @@
 -- Cached Functions Installation
 -- Author: Saeed Aliakbarian
 -- Created: 2019-03-10 (1397-12-19)
--- Last Update: 2019-04-07 (1398-01-18)
+-- Last Update: 2019-04-09 (1398-01-20)
 
 -- Before Execute:
 --	1. Replace all occurences of YourDatabaseName to your database name in the following code 
