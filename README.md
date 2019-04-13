@@ -37,4 +37,5 @@ SELECT OutputValue FROM dbo.cfn_CachedValidate_IranianNationalCode('0123456789')
 SELECT * FROM dbo.cfn_CachedValidate_IranianNationalCode('0123456789')
 SELECT * FROM dbo.cfn_CachedValidate_IranianNationalCode('1234567890')
 SELECT * FROM dbo.cfn_CachedValidate_IranianNationalCode('12-345678-9')
+SELECT * FROM dbo.cfn_CachedValidate_IranianPostalCode('81587-56491')
 ```
