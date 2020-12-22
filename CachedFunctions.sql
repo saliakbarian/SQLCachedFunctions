@@ -1,7 +1,7 @@
 -- Cached Functions Installation
 -- Author: Saeed Aliakbarian
 -- Created: 2019-03-10 (1397-12-19)
--- Last Update: 2019-04-09 (1398-01-20)
+-- Last Update: 2020-12-22 (1399-10-02)
 
 -- Before Execute:
 --	1. Replace all occurences of YourDatabaseName to your database name in the following code 
@@ -85,13 +85,13 @@ GO
 
 -- Author: Saeed Aliakbarian
 -- Created: 2019-03-10 (1397-12-19)
--- Last Update: 2019-04-04 (1398-01-15)
+-- Last Update: 2020-12-22 (1399-10-02)
 -- This function validates an input string to be a valid Iranian National Code
 -- Output:
 --		If Valid => the 10 digit Iranian National Code with English numeric digits
 --		If Not Valid => NULL
 -- Notes:
--- If the input string contains '-' or '.' they are removed before validation
+-- If the input string contains '-' or '.' or ' ' they are removed before validation
 -- If the input string is 9 or 8 characters long, the functions adds 1 or 2 leading zeros
 -- If the input string contains Persian or Arabic numeric digits, they are converted to English numeric digits as output
 -- A valid Iranian National Code cannot start with 000 as no region is coded as 000 (as of 1397-12-12) 
@@ -106,7 +106,7 @@ RETURNS NVARCHAR(10)
 AS
 BEGIN
 	DECLARE @NewNC NVARCHAR(10)=''
-	SET @NationalCode=REPLACE(REPLACE(@NationalCode,'-',''),'.','')
+	SET @NationalCode=REPLACE(REPLACE(REPLACE(@NationalCode,'-',''),'.',''),' ','')
 	SET @NationalCode=LTRIM(RTRIM(@NationalCode))
 	IF @NationalCode IS NULL OR LEN(@NationalCode)>10 OR LEN(@NationalCode)<8
 		RETURN NULL
@@ -118,7 +118,7 @@ BEGIN
     IF LEFT(@NationalCode,3)='000'
 		RETURN NULL
 
-	IF @NationalCode LIKE '%[^0-9]%'
+	IF @NationalCode LIKE '%[^0123456789۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩]%'
 		RETURN NULL
 
 	DECLARE @c int
@@ -177,7 +177,7 @@ BEGIN
 	DECLARE @IsOneFound BIT=0
 	DECLARE @ResultPC NVARCHAR(10)=''
 
-    DECLARE @C NCHAR(1)
+    DECLARE @C NCHAR(1)
 	DECLARE @UC INT
 	DECLARE @i INT=1
 
